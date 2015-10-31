@@ -1,10 +1,11 @@
 Package: surveyR
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Common Functions Used During Fisheries Surveys
 Version: 0.1
 Date: 2015-10-30
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
+Author: Kevin L. Stierhoff
+Maintainer: Kevin L. Stierhoff <kevin.stierhoff@noaa.gov>
+Description: Common functions used by researchers in the Advanced Survey Technologies at NOAA's Southwest Fisheries Science Center
+Imports: forecast
 License: What license is it under?
 LazyData: TRUE
