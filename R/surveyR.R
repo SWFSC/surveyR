@@ -1,21 +1,6 @@
 # functions used by dive_proc.R
 
-calc_cw <- function(pitch,altitude,ROV="HDHV",z=0.06,max.sr=6,smoother=15){
-  # smooth altitude
-  alt.sm <- as.numeric(ma(altitude,order=smoother))
-  # find NAs
-  isna <- which(is.na(alt.sm)==TRUE)
-  # replace NAs with original values
-  alt.sm[isna] <- altitude[isna]
-
-  # smooth pitch
-  pitch.sm <- as.numeric(ma(pitch,order=smoother))
-  # find NAs
-  isna <- which(is.na(pitch.sm)==TRUE)
-  # replace NAs with original values
-  pitch.sm[isna] <- pitch[isna]
-
-  # Calculate field of view estimates
+calc_width <- function(pitch,altitude,ROV="HDHV",z=0.06,max.sr=6){
   if(ROV=="HDHV"){
     # Empirically measured viewing angles for the HDHV ROV
     Alpha	      <- -122.79*z^4 + 132.93*z^3 + 81.984*z^2 - 142.07*z + 46.159# vertical range from 64 deg (full-wide) to 6.6 deg (10X zoom)
@@ -27,39 +12,32 @@ calc_cw <- function(pitch,altitude,ROV="HDHV",z=0.06,max.sr=6,smoother=15){
     Alpha.min   <- 1.27 # min vertical viewing angle at 10x zoom; measured empirically
     Alpha.spec  <- 64   # max vertical viewing angle at full-wide zoom; manufacturer spec
     Beta.diff   <- 100*(1-(tan((Beta.max/2)*(pi/180))/tan((Beta.spec/2)*(pi/180)))) # difference in area between spec and empirical FOV
-    h.offset    <- 0.4127 # altitude of the camera above the frame; added to altitude from DVL to get camera height
+    v.offset    <- 0.4127 # altitude of the camera above the frame; added to altitude from DVL to get camera height
+    lens.dist   <- 0.1232 # distance (m) of camera lens from tilt tray axis
+    pitch.diff  <- 415.5  # difference (deg) between lens pitch and all other pitch values
+
   } else {
     # Empirically measured viewing angles for the Phantom DS4 ROV
-    Alpha	      <- -122.79*z^4 + 132.93*z^3 + 81.984*z^2 - 142.07*z + 46.159# vertical range from 64 deg (full-wide) to 6.6 deg (10X zoom)
-    Beta	      <- -297.54*z^4 + 425*z^3 - 15.571*z^2 - 194*z + 74.416 # horiz range from 73.9 deg (full-wide) to 2.26 deg (10X zoom)
-    Beta.max    <- 73.95# max horiz viewing angle at full-wide zoom; measured empirically
-    Beta.min    <- 2.26 # min horiz viewing angle at 10x zoom; measured empirically
+    Alpha       <- 47.3 # max vertical viewing angle at full-wide zoom; measured empirically
+    Beta        <- 61.1 # max horiz viewing angle at full-wide zoom; measured empirically
     Beta.spec   <- 85   # max horiz viewing angle at full-wide zoom; manufacturer spec
-    Alpha.max   <- 45.9 # max vertical viewing angle at full-wide zoom; measured empirically
-    Alpha.min   <- 1.27 # min vertical viewing angle at 10x zoom; measured empirically
     Alpha.spec  <- 64   # max vertical viewing angle at full-wide zoom; manufacturer spec
-    Beta.diff   <- 100*(1-(tan((Beta.max/2)*(pi/180))/tan((Beta.spec/2)*(pi/180)))) # difference in area between spec and empirical FOV
-    h.offset    <- 0.4127 # altitude of the camera above the frame; added to altitude from DVL to get camera height
+    v.offset    <- 0.3429 # altitude of the camera above the frame; added to altitude from DVL to get camera height
+    lens.dist   <- 0.1060 # distance (m) of camera lens from tilt tray axis
+    pitch.diff  <- 410.0  # difference (deg) between lens pitch and all other pitch values
   }
   # Calculate altitude of camera above the seabed (distance between the bottom of the frame and the camera lens) from smoothed altitude
   # Accounts for rotation of the camera module about the tilt tray axis
-  alt     <- alt.sm + h.offset + (0.1232 * (sin(pitch.sm + 415.5) * (pi/180)))   # altitude of the camera above the frame
+  alt     <- altitude + v.offset + (lens.dist * (sin(pitch + pitch.diff) * (pi/180)))   # altitude of the camera above the frame
 
   # calculate the slant range (sr) from the camera to the seabed, using smoothed pitch values
-  sr  <- -alt/sin(pitch.sm * (pi/180))
+  sr  <- -alt/sin(pitch * (pi/180))
 
-  # replace values when they are negative with zero
-  sr[sr < 0] <- NA
-  # replace values when they are beyond the theoretical maximum viewing distance
-  sr[sr > max.sr] <- NA
-  # use linear interpolation to replace missing slant range values
-  sr <- as.numeric(na.interp(sr))
-
-  # calculate horizontal width at the center of the camera (or field of view, FOV)
+    # calculate horizontal width at the center of the camera (or field of view, FOV)
   cw  <- 2 * sr * tan((Beta/2)*(pi/180))
 
   # output results as a data frame
-  data.frame(camera_alt = alt,slant_range = sr,center_width = cw)
+  data.frame(camera_altitude = alt,slant_range = sr,center_width = cw)
 }
 
 # convert WinFrog lat/lon (e.g., NDD MM.MMMM,WDDD MM.MMM) to decimal degrees
