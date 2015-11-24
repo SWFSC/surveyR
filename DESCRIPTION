@@ -6,6 +6,5 @@ Date: 2015-10-30
 Author: Kevin L. Stierhoff
 Maintainer: Kevin L. Stierhoff <kevin.stierhoff@noaa.gov>
 Description: Common functions used by researchers in the Advanced Survey Technologies at NOAA's Southwest Fisheries Science Center
-Imports: forecast
 License: What license is it under?
 LazyData: TRUE

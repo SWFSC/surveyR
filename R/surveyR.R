@@ -88,3 +88,12 @@ calc_depth <- function(latitude,pressure){
   depth.pressure 	<- ((((-1.82e-15 * p + 2.279e-10) * p - 2.2512e-5) * p + 9.72659) * p) / g
   return(depth.pressure)
 }
+
+# convert time from Echoview to POSIXct
+ev2posix <- function(date,time,tz="GMT"){
+  # create a new string to pass to as.POSIXct
+  temp.datetime <- paste(date,as.numeric(substr(time,1,4)),as.numeric(substr(time,5,10))/10000)
+  # convert temporary string to POSIXct format, retaining decimal second precision
+  datetime <- as.POSIXct(temp.datetime,format="%Y%m%d %H%M %OS",tz=tz)
+  return(datetime)
+}
