@@ -97,3 +97,28 @@ ev2posix <- function(date,time,tz="GMT"){
   datetime <- as.POSIXct(temp.datetime,format="%Y%m%d %H%M %OS",tz=tz)
   return(datetime)
 }
+
+# convert decimal degrees to degrees decimal minutes
+dd2decmin <- function (dd,format="latex"){
+  deg <- as.integer(dd)
+  dd  <- abs(dd)
+  decmin <- round((abs(dd) - abs(deg)) * 60,6)
+  if (format=="latex"){
+    ddecmin <- paste(deg,"^o^ ",decmin,"'",sep="")
+  } else {
+    ddecmin <- paste(deg,"deg ",decmin,"min",sep="")
+  }
+  ddecmin
+}
+# convert SCS lat/lon (e.g., DDMM.MMMMN,DDDMM.MMMW) to decimal degrees
+scs2dd <- function(x){
+  if(length(grep("N",x))>0){
+    as.numeric(substr(x,1,2)) + as.numeric(substr(x,3,7))/60
+  } else {
+    -(as.numeric(substr(x,1,3)) + as.numeric(substr(x,4,8))/60)
+  }
+}
+# convert SCS date and time to POSIXct date/time (GMT)
+scs2posix <- function(date,time){
+  as.POSIXct(paste(date,time),tz = "GMT",format = "%m/%d/%Y %H:%M:%S")
+}
