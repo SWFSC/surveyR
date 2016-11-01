@@ -122,3 +122,11 @@ scs2dd <- function(x){
 scs2posix <- function(date,time){
   as.POSIXct(paste(date,time),tz = "GMT",format = "%m/%d/%Y %H:%M:%S")
 }
+
+# Install and load all packages provided from a character vector
+load_pkgs = function(pkgs){
+  new_pkgs = pkgs[!(pkgs %in% installed.packages()[ ,'Package'])]
+  if(length(new_pkgs) > 0) install.packages(new_pkgs)
+  invisible(lapply(pkgs,function(x)
+    suppressPackageStartupMessages(library(x,character.only=TRUE))))
+}
