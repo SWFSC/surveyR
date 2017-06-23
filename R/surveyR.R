@@ -95,7 +95,12 @@ calc_sat <- function(sal,temp,oxy.conc){
   return(oxy.sat)
 }
 
-# Calculate depth from pressure in SEAWATER (factors-in gravity and latitude)
+#' Calculate depth from pressure in SEAWATER (factors-in gravity and latitude).
+#'
+#' @param latitude Latitude in decimal degrees.
+#' @param pressure Pressure in decibars.
+#' @return A data frame containing depth in meters from pressure and adjusted for latitude.
+#' @export
 calc_depth <- function(latitude,pressure){
   # Fofonoff NP, Millard RC, Jr. (1983) Algorithms for computation of fundamental properties of seawater. UNESCO Tech Pap Mar Sci 44:53 pp.
   # Assumes water column at 0 deg C, and salinity of 35 PSU
@@ -107,7 +112,12 @@ calc_depth <- function(latitude,pressure){
   return(depth.pressure)
 }
 
-# convert time from Echoview to POSIXct
+#' Convert time from Echoview format to POSIXct
+#'
+#' @param date Date in Echoview format.
+#' @param time Time in Echoview format.
+#' @return A date/time object in POSIXct format.
+#' @export
 ev2posix <- function(date,time,tz="GMT"){
   # create a new string to pass to as.POSIXct
   temp.datetime <- paste(date,as.numeric(substr(time,1,4)),as.numeric(substr(time,5,10))/10000)
@@ -116,7 +126,11 @@ ev2posix <- function(date,time,tz="GMT"){
   return(datetime)
 }
 
-# convert decimal degrees to degrees decimal minutes
+#' Convert decimal degrees to degrees and decimal minutes
+#'
+#' @param dd Latitude or longitude in decimal degrees.
+#' @return Latitude or longitude in degrees and decimal minutes.
+#' @export
 dd2decmin <- function (dd,format="latex"){
   deg <- as.integer(dd)
   dd  <- abs(dd)
@@ -126,22 +140,38 @@ dd2decmin <- function (dd,format="latex"){
   } else {
     ddecmin <- paste(deg,"deg ",decmin,"min",sep="")
   }
-  ddecmin
-}
-# convert SCS lat/lon (e.g., DDMM.MMMMN,DDDMM.MMMW) to decimal degrees
-scs2dd <- function(x){
-  if(length(grep("N",x))>0){
-    as.numeric(substr(x,1,2)) + as.numeric(substr(x,3,7))/60
-  } else {
-    -(as.numeric(substr(x,1,3)) + as.numeric(substr(x,4,8))/60)
-  }
-}
-# convert SCS date and time to POSIXct date/time (GMT)
-scs2posix <- function(date,time){
-  as.POSIXct(paste(date,time),tz = "GMT",format = "%m/%d/%Y %H:%M:%S")
+  return(ddecmin)
 }
 
-# Install and load all packages provided from a character vector
+#' convert latitude or longitude from SCS format to decimal degrees
+#'
+#' @param x Latitude or longitude in SCS format.
+#' @return Latitude or longitude in decimal degrees.
+#' @export
+scs2dd <- function(x){
+  if(length(grep("N",x))>0){
+    y <- as.numeric(substr(x,1,2)) + as.numeric(substr(x,3,7))/60
+  } else {
+    y <- -(as.numeric(substr(x,1,3)) + as.numeric(substr(x,4,8))/60)
+  }
+  return(y)
+}
+
+#' Convert date and time from SCS format to POSIXct
+#'
+#' @param date Date in SCS format.
+#' @param time Time in SCS format.
+#' @return A date/time object in POSIXct format.
+#' @export
+scs2posix <- function(date,time){
+  x <- as.POSIXct(paste(date,time),tz = "GMT",format = "%m/%d/%Y %H:%M:%S")
+  return(x)
+}
+
+#' Install and load all packages provided from a character vector
+#'
+#' @param pkgs A character vector containing the names of packages to be loaded and/or installed.
+#' @export
 load_pkgs = function(pkgs){
   new_pkgs = pkgs[!(pkgs %in% installed.packages()[ ,'Package'])]
   if(length(new_pkgs) > 0) install.packages(new_pkgs)
@@ -149,7 +179,15 @@ load_pkgs = function(pkgs){
     suppressPackageStartupMessages(library(x,character.only=TRUE))))
 }
 
-# Function for converting x/y points to lat/lon
+#' Convert x/y points to latitude/longitude
+#'
+#' @param x X position, in meters.
+#' @param y Y position in meters.
+#' @param lat Latitude of known origin.
+#' @param lon Longitude of known origin.
+#' @param units Distance units in kilometers (default).
+#' @return A date/time object in POSIXct format.
+#' @export
 xy2latlon <- function(x,y,lat,lon,units="km"){
   # Calculate shift in X direction (east positive)
   shift.x <- swfscMisc::destination(lat,lon,90,x/1000,units=units)
