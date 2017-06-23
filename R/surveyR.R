@@ -1,5 +1,4 @@
 # functions used by dive_proc.R
-
 calc_width <- function(pitch,altitude,ROV="HDHV",z=0.06,max.sr=6){
   if(ROV=="HDHV"){
     # Empirically measured viewing angles for the HDHV ROV
