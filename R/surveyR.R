@@ -130,3 +130,20 @@ load_pkgs = function(pkgs){
   invisible(lapply(pkgs,function(x)
     suppressPackageStartupMessages(library(x,character.only=TRUE))))
 }
+
+# Function for converting x/y points to lat/lon
+xy2latlon <- function(x,y,lat,lon,units="km"){
+  require(ggplot2);require(swfscMisc)
+  # Calculate shift in X direction (east positive)
+  shift.x <- destination(lat,lon,90,x/1000,units=units)
+  df1 <- data.frame(shift.x[grep("lat",names(shift.x))],shift.x[grep("lon",names(shift.x))])
+  names(df1) <- c("lat","lon")
+  # Calculate shift in Y direction (north positive)
+  shift.y <- destination(df1$lat,df1$lon,0,y/1000,units=units)
+  df2 <- data.frame(shift.y[grep("lat",names(shift.y))],shift.y[grep("lon",names(shift.y))])
+  names(df2) <- c("lat","lon")
+  # Remove row names
+  row.names(df2) <- NULL
+  # Return calculated lat/lon data frame
+  return(df2)
+}
