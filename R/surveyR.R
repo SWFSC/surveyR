@@ -56,7 +56,6 @@ calc_sat <- function(sal,temp,oxy.conc){
 
   # Equation details
   # ln[O2] = A1 + A2*(100/T) + A3*ln(T/100) + A4*(T/100) + S*[B1 + B2*(T/100) + B3*((T/100)^2)];
-
   # equation constants
   a1 <- -173.4292
   a2 <-  249.6339
@@ -132,7 +131,7 @@ load_pkgs = function(pkgs){
 
 # Function for converting x/y points to lat/lon
 xy2latlon <- function(x,y,lat,lon,units="km"){
-  require(ggplot2);require(swfscMisc)
+  require(swfscMisc)
   # Calculate shift in X direction (east positive)
   shift.x <- destination(lat,lon,90,x/1000,units=units)
   df1 <- data.frame(shift.x[grep("lat",names(shift.x))],shift.x[grep("lon",names(shift.x))])
@@ -145,4 +144,17 @@ xy2latlon <- function(x,y,lat,lon,units="km"){
   row.names(df2) <- NULL
   # Return calculated lat/lon data frame
   return(df2)
+}
+
+# Function for calculating the map boundaries from lat/lon data
+map_bounds <- function(lat,lon,pad = 0.05){
+  # configure survey plan map
+  # determine the lat/lon to add to the data range to achieve the desired frame
+  pad.x <- (range(lon)[2] - range(lon)[1])*pad
+  pad.y <- (range(lat)[2] - range(lat)[1])*pad
+  # set limits for desired frame
+  range.lat <- c(min(lat)-pad.x,max(lat)+pad.x)
+  range.lon <- c(min(lon)-pad.y,max(lon)+pad.y)
+  # Return data frame with lat/lon range
+  data.frame(range.lat,range.lon)
 }
