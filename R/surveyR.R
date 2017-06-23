@@ -1,4 +1,12 @@
-# functions used by dive_proc.R
+#' Calculate visual transect width from camera pitch, altitude, and zoom level.
+#'
+#' @param pitch Camera pitch in degrees (positive or negative; zero equals horizontal).
+#' @param altitude Raw altitude from the altimeter or similar device.
+#' @param ROV ROV on which camera is installed.
+#' @param z Analog voltage output from camera zoom indicator.
+#' @param max.sr Maximum slant range or viewing distance in meters.
+#' @return A data frame containing the \code{camera_altitude}, \code{slant_range}, and \code{center_width} in meters.
+#' @export
 calc_width <- function(pitch,altitude,ROV="HDHV",z=0.06,max.sr=6){
   if(ROV=="HDHV"){
     # Empirically measured viewing angles for the HDHV ROV
@@ -39,16 +47,28 @@ calc_width <- function(pitch,altitude,ROV="HDHV",z=0.06,max.sr=6){
   data.frame(camera_altitude = alt,slant_range = sr,center_width = cw)
 }
 
-# convert WinFrog lat/lon (e.g., NDD MM.MMMM,WDDD MM.MMM) to decimal degrees
+#' Convert latitude and longitude from Winfrog format to decimal degrees.
+#'
+#' @param x Latitude or longitude values in Winfrog format.
+#' @return \code{y} in decimal degrees.
+#' @export
 winfrog2dd <- function(x){
   if(length(grep("N",x))>0){
-    as.numeric(substr(x,2,3)) + as.numeric(substr(x,5,11))/60
+    y <- as.numeric(substr(x,2,3)) + as.numeric(substr(x,5,11))/60
   } else {
-    -(as.numeric(substr(x,2,5)) + as.numeric(substr(x,6,12))/60)
+    y <- -(as.numeric(substr(x,2,5)) + as.numeric(substr(x,6,12))/60)
   }
+  # Return values in decimal degrees
+  return(y)
 }
 
-# calculate dissolved oxygen saturation from temperature and sal
+#' Calculate dissolved oxygen percent saturation from temperature, salinity, and oxygen concentration.
+#'
+#' @param sal Salinity (PSU).
+#' @param temp Temperature (degrees C).
+#' @param oxy.conc Oxygen concentration (\code{micromoles}).
+#' @return Percent saturation  \code{oxy_sat} (percent).
+#' @export
 calc_sat <- function(sal,temp,oxy.conc){
   # calculate dissolved oxygen saturation from temperature and sal
   # From Weiss, R.F.(1970), The solubility of nitrogen, oxygen and argon in water and seawater.
@@ -131,13 +151,12 @@ load_pkgs = function(pkgs){
 
 # Function for converting x/y points to lat/lon
 xy2latlon <- function(x,y,lat,lon,units="km"){
-  require(swfscMisc)
   # Calculate shift in X direction (east positive)
-  shift.x <- destination(lat,lon,90,x/1000,units=units)
+  shift.x <- swfscMisc::destination(lat,lon,90,x/1000,units=units)
   df1 <- data.frame(shift.x[grep("lat",names(shift.x))],shift.x[grep("lon",names(shift.x))])
   names(df1) <- c("lat","lon")
   # Calculate shift in Y direction (north positive)
-  shift.y <- destination(df1$lat,df1$lon,0,y/1000,units=units)
+  shift.y <- swfscMisc::destination(df1$lat,df1$lon,0,y/1000,units=units)
   df2 <- data.frame(shift.y[grep("lat",names(shift.y))],shift.y[grep("lon",names(shift.y))])
   names(df2) <- c("lat","lon")
   # Remove row names
@@ -146,6 +165,13 @@ xy2latlon <- function(x,y,lat,lon,units="km"){
   return(df2)
 }
 
+#' Calculate map boundaries from lat/lon input.
+#'
+#' @param lat Latitude in decimal degrees.
+#' @param lon Longitude in decimal degrees.
+#' @param pad Percentage that map boundaries are extended beyond the input data.
+#' @return A data frame containing the range of \code{lat} and \code{lon}.
+#' @export
 # Function for calculating the map boundaries from lat/lon data
 map_bounds <- function(lat,lon,pad = 0.05){
   # configure survey plan map
