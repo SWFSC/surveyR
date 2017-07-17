@@ -114,15 +114,14 @@ calc_depth <- function(latitude,pressure){
 
 #' Convert time from Echoview format to POSIXct
 #'
-#' @param date Date in Echoview format.
-#' @param time Time in Echoview format.
+#' @param date Date in Echoview format (Date_M).
+#' @param time Time in Echoview format (Time_M).
+#' @param tz Time zone.
 #' @return A date/time object in POSIXct format.
 #' @export
 ev2posix <- function(date,time,tz="GMT"){
-  # create a new string to pass to as.POSIXct
-  temp.datetime <- paste(date,as.numeric(substr(time,1,4)),as.numeric(substr(time,5,10))/10000)
-  # convert temporary string to POSIXct format, retaining decimal second precision
-  datetime <- as.POSIXct(temp.datetime,format="%Y%m%d %H%M %OS",tz=tz)
+  # convert date and time string to POSIXct format 20170321 23:14:55
+  datetime <- as.POSIXct(paste(date,time),format="%Y%m%d %H:%M:%OS",tz=tz)
   return(datetime)
 }
 

@@ -7,9 +7,11 @@
 ev2posix(date, time, tz = "GMT")
 }
 \arguments{
-\item{date}{Date in Echoview format.}
+\item{date}{Date in Echoview format (Date_M).}
 
-\item{time}{Time in Echoview format.}
+\item{time}{Time in Echoview format (Time_M).}
+
+\item{tz}{Time zone.}
 }
 \value{
 A date/time object in POSIXct format.
