@@ -292,3 +292,18 @@ num2words <- function(x) {
   if (length(x) > 1) return(trim(sapply(x, helper)))
   helper(x)
 }
+
+#' Create gps.csv files used by Echoview.
+#'
+#' @param lat Latitude in decimal degrees.
+#' @param long Longitude in decimal degrees.
+#' @param date_time Date/time field in ISO 8601 date format (e.g., %Y-%m-%d %H:%M:%S).
+#' @return A data frame containing  \code{Date}, \code{Time}, \code{latitude}, and \code{longitude}.
+#' @export
+create_ev_gps <- function(df, lat = df$lat, long = df$long, date_time = df$datetime) {
+  df <- df %>%
+    mutate(GPS_date = format(datetime, format = "%F"),
+           GPS_time = format(datetime, format = "%T")) %>%
+    select(GPS_date, GPS_time, latitude = lat, longitude = long)
+  return(df)
+}
