@@ -4,8 +4,7 @@
 \alias{create_ev_gps}
 \title{Create gps.csv files used by Echoview.}
 \usage{
-create_ev_gps(df, lat = df$lat, long = df$long,
-  date_time = df$datetime)
+create_ev_gps(df, lat = df$lat, long = df$long, date_time = df$datetime)
 }
 \arguments{
 \item{lat}{Latitude in decimal degrees.}

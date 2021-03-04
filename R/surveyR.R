@@ -146,11 +146,12 @@ dd2decmin <- function(dd, format="latex") {
 #' @param x Latitude or longitude in SCS format.
 #' @return Latitude or longitude in decimal degrees.
 #' @export
-scs2dd <- function(x) {
+scs2dd <- function (x) {
   if (length(grep("N", x)) > 0) {
-    y <- as.numeric(substr(x, 1, 2)) + as.numeric(substr(x, 3, 7)) / 60
-  } else {
-    y <- -(as.numeric(substr(x, 1, 3)) + as.numeric(substr(x, 4, 8)) / 60)
+    y <- as.numeric(substr(x, 1, 2)) + signif(as.numeric(substr(x, 3, 9))/60, digits = 6)
+  }
+  else {
+    y <- -(as.numeric(substr(x, 1, 3)) + signif(as.numeric(substr(x, 4, 10))/60, digits = 6))
   }
   return(y)
 }
