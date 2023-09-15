@@ -148,9 +148,15 @@ dd2decmin <- function(dd, format="latex") {
 #' @export
 scs2dd <- function (x) {
   if (length(grep("N", x)) > 0) {
+    # Remove all non-numeric or decimal characters
+    x <- gsub("[^0-9.]", "", x)
+    # Parse the remaining characters to extract the latitude
     y <- as.numeric(substr(x, 1, 2)) + signif(as.numeric(substr(x, 3, 9))/60, digits = 6)
   }
   else {
+    # Remove all non-numeric or decimal characters
+    x <- gsub("[^0-9.]", "", x)
+    # Parse the remaining characters to extract the longitude
     y <- -(as.numeric(substr(x, 1, 3)) + signif(as.numeric(substr(x, 4, 10))/60, digits = 6))
   }
   return(y)
