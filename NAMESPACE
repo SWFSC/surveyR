@@ -3,7 +3,6 @@
 export(calc_depth)
 export(calc_sat)
 export(calc_width)
-export(create_ev_gps)
 export(dd2decmin)
 export(ev2posix)
 export(load_pkgs)
