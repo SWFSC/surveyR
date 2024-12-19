@@ -1,4 +1,4 @@
-# FRD-AST-surveyR 
+# surveyR 
 This repository contains functions used by the SWFSC/AST to conduct analyses related to ROV and acoustic-trawl-method (ATM) surveys. Some of these functions may be deprecated or relocated to the {atm} package in the future.
 
 
